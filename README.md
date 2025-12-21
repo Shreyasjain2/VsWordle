@@ -1,4 +1,4 @@
-![Multiplayer Wordle](https://github.com/shreyasjain2/WordleMul/blob/main/VSWordle.png)
+![Multiplayer Wordle](https://github.com/Shreyasjain2/VsWordle/blob/main/VSWordle.png)
 <div align="center">
   <a href="https://wordlemul.onrender.com"><img src="https://img.shields.io/badge/Live-Demo-success" alt="Live Demo"/></a>
   <img src="https://img.shields.io/badge/Mode-2%20Player-blue" alt="Game Mode" />
