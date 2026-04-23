@@ -55,10 +55,11 @@
 	}
 	.tile {
 		font-size: 2rem;
-		font-weight: bold;
+		font-weight: 700;
 		text-transform: uppercase;
 		position: relative;
 		transform-style: preserve-3d;
+		font-family: 'Inter', sans-serif;
 		&[data-animation="bounce"] {
 			animation: bounce 1s;
 		}
@@ -72,6 +73,7 @@
 		backface-visibility: hidden;
 		-webkit-backface-visibility: hidden;
 		transition: transform 0s ease-in-out;
+		border-radius: 6px;
 	}
 	.front {
 		border: 2px solid var(--border-primary);

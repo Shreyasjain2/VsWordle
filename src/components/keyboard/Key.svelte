@@ -15,9 +15,9 @@
 <style>
 	div {
 		font-size: calc(var(--fs-tiny) + 1px);
-		font-weight: bold;
+		font-weight: 600;
 		text-transform: uppercase;
-		border-radius: 4px;
+		border-radius: 6px;
 		height: 58px;
 		background: var(--key-bg);
 		cursor: pointer;
@@ -25,6 +25,7 @@
 		place-items: center;
 		flex: 1;
 		transition: background-color 0.3s ease-in-out;
+		font-family: 'Inter', sans-serif;
 	}
 	:global(.guesses) div {
 		transition-delay: 1s;

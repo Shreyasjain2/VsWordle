@@ -25,11 +25,13 @@ class SocketService extends EventEmitter {
   constructor() {
     super();
     // Automatically detect server URL for production
-    const serverUrl = window.location.hostname === 'localhost' 
-      ? 'http://localhost:3000' 
+    const serverUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+      ? 'http://127.0.0.1:3000' 
       : window.location.origin;
     
-    this.socket = io(serverUrl);
+    this.socket = io(serverUrl, {
+      transports: ['websocket']
+    });
     
     this.socket.on('connect', () => {
       this.playerId = this.socket.id;

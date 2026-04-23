@@ -4,14 +4,17 @@ const { Server } = require("socket.io");
 const path = require('path');
 const wordList = require('./words_5.ts');
 
+const cors = require('cors');
 const app = express();
+app.use(cors({ origin: '*' }));
+
 const server = http.createServer(app);
 
 // Production-ready Socket.IO configuration
 const io = new Server(server, {
   cors: { 
-    origin: process.env.NODE_ENV === 'production' ? false : "*", 
-    methods: ["GET", "POST"] 
+    origin: "*", 
+    methods: ["GET", "POST"]
   },
   transports: ['websocket', 'polling']
 });

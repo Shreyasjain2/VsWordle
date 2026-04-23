@@ -25,6 +25,7 @@
   let boardStates: LetterState[][] = Array.from({ length: 6 }, () => Array(5).fill("🔳"));
   let currentRow = 0;
   let letterStates = new LetterStates();
+  let canvasEl: HTMLCanvasElement;
 
   // --- Opponent State ---
   // We'll structure the opponent's board similarly for consistency
@@ -72,8 +73,10 @@ socketService.on('guessProcessed', (data) => {
 
     if (guesserId === socketService.playerId) {
       // It's me! Update MY board.
-      const newWords = Array(6).fill("");
-      const newStates = Array.from({ length: 6 }, () => Array(5).fill("🔳"));
+      // Ensure we have at least 6 rows, plus enough for all guesses AND the current typing row
+      const targetLen = Math.max(6, guesses.length + 1);
+      const newWords = Array(targetLen).fill("");
+      const newStates = Array.from({ length: targetLen }, () => Array(5).fill("🔳"));
       
       guesses.forEach((g, i) => {
           newWords[i] = g.word;
@@ -109,6 +112,11 @@ socketService.on('guessProcessed', (data) => {
       boardWords[currentRow] = currentGuess;
     } else if (currentGuess.length < 5 && /^[a-zA-Z]$/.test(key)) {
       currentGuess += key.toLowerCase();
+      // Dynamically add a new row if we exceeded the board
+      if (currentRow >= boardWords.length) {
+        boardWords = [...boardWords, ""];
+        boardStates = [...boardStates, Array(5).fill("🔳")];
+      }
       boardWords[currentRow] = currentGuess;
     }
   }
@@ -140,12 +148,86 @@ socketService.on('guessProcessed', (data) => {
     };
     
     window.addEventListener('keydown', handleKeyDown);
+
+    // --- Particle background ---
+    if (canvasEl) {
+      const ctx = canvasEl.getContext('2d');
+      let w: number, h: number;
+      const particles: {x:number,y:number,vx:number,vy:number,r:number,o:number}[] = [];
+      const mouse = { x: -9999, y: -9999 };
+      let animId: number;
+
+      function resize() {
+        w = canvasEl.width = window.innerWidth;
+        h = canvasEl.height = window.innerHeight;
+      }
+      resize();
+      window.addEventListener('resize', resize);
+
+      const onMouseMove = (e: MouseEvent) => { mouse.x = e.clientX; mouse.y = e.clientY; };
+      document.addEventListener('mousemove', onMouseMove);
+
+      for (let i = 0; i < 60; i++) {
+        particles.push({
+          x: Math.random() * w, y: Math.random() * h,
+          vx: (Math.random() - 0.5) * 0.3, vy: (Math.random() - 0.5) * 0.3,
+          r: Math.random() * 2 + 0.5, o: Math.random() * 0.3 + 0.05
+        });
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, w, h);
+        particles.forEach(p => {
+          const dx = p.x - mouse.x;
+          const dy = p.y - mouse.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 120) {
+            const force = (120 - dist) / 120 * 0.8;
+            p.x += (dx / dist) * force;
+            p.y += (dy / dist) * force;
+          }
+          p.x += p.vx; p.y += p.vy;
+          if (p.x < 0) p.x = w; if (p.x > w) p.x = 0;
+          if (p.y < 0) p.y = h; if (p.y > h) p.y = 0;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(255,255,255,' + p.o + ')';
+          ctx.fill();
+        });
+        for (let i = 0; i < particles.length; i++) {
+          for (let j = i + 1; j < particles.length; j++) {
+            const dx2 = particles[i].x - particles[j].x;
+            const dy2 = particles[i].y - particles[j].y;
+            const d = Math.sqrt(dx2 * dx2 + dy2 * dy2);
+            if (d < 150) {
+              ctx.beginPath();
+              ctx.moveTo(particles[i].x, particles[i].y);
+              ctx.lineTo(particles[j].x, particles[j].y);
+              ctx.strokeStyle = 'rgba(255,255,255,' + (0.04 * (1 - d / 150)) + ')';
+              ctx.lineWidth = 0.5;
+              ctx.stroke();
+            }
+          }
+        }
+        animId = requestAnimationFrame(draw);
+      }
+      draw();
+
+      return () => {
+        window.removeEventListener('keydown', handleKeyDown);
+        window.removeEventListener('resize', resize);
+        document.removeEventListener('mousemove', onMouseMove);
+        cancelAnimationFrame(animId);
+      };
+    }
+
     return () => window.removeEventListener('keydown', handleKeyDown);
   });
 
   const formatTime = (ms) => (ms / 1000).toFixed(2);
 
 </script>
+<canvas id="particle-canvas" bind:this={canvasEl}></canvas>
 <main>
  <GameOverModal 
     isOpen={$gameState === 'gameOver'}
@@ -160,7 +242,8 @@ socketService.on('guessProcessed', (data) => {
     <div class="game-view-container">
       <div class="main-game-area">
         <header>
-          <h1>Wordle</h1>
+          <h1>VS WORDLE</h1>
+          <div class="header-accent"></div>
         </header>
         
         {#if $gameState === 'playing'}
@@ -188,7 +271,8 @@ socketService.on('guessProcessed', (data) => {
       </div>
 
      <div class="opponent-sidebar">
-  <h3>OPPONENT'S BOARD</h3>
+  <div class="sidebar-label">OPPONENT</div>
+  <h3>Their Board</h3>
   <div class="secret-word">
     {#each $mySecretWord.toUpperCase().padEnd(5).split('') as char}
       <div class="secret-word-tile">{char}</div>
@@ -203,27 +287,43 @@ socketService.on('guessProcessed', (data) => {
   {/if}
 </main>
 
+
+
 <style>
+  :global(#particle-canvas) {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+  }
+
   :global(body) {
-    font-family: 'Helvetica Neue', Arial, sans-serif;
-    background-color: #121213;
-    color: #fff;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background-color: #0c0d10;
+    color: #e8eaed;
     margin: 0;
     display: flex;
     justify-content: center;
     align-items: flex-start;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   main {
     width: 100%;
     height: 100vh;
+    position: relative;
+    z-index: 1;
   }
 
   .game-view-container {
     display: flex;
     justify-content: center;
-    gap: 40px;
-    padding: 20px;
+    gap: 48px;
+    padding: 24px;
     max-width: 1200px;
     margin: 0 auto;
   }
@@ -239,139 +339,115 @@ socketService.on('guessProcessed', (data) => {
   header {
     width: 100%;
     text-align: center;
-    border-bottom: 1px solid #3a3a3c;
-    margin-bottom: 10px;
+    margin-bottom: 16px;
+    position: relative;
+  }
+
+  .header-accent {
+    width: 40px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    margin: 0 auto;
   }
 
   header h1 {
-    margin: 0.2em 0;
-    font-size: 2.2rem;
-    letter-spacing: 0.1rem;
+    margin: 0.3em 0 0.4em;
+    font-size: 1.8rem;
+    letter-spacing: 0.35rem;
+    font-weight: 800;
+    color: #ffffff;
+    text-transform: uppercase;
   }
   
   .game-status {
-    height: 60px;
-    margin-bottom: 10px;
+    height: 52px;
+    margin-bottom: 12px;
   }
 
   .status-message {
     text-align: center;
-    color: #c9b458;
-    font-weight: bold;
+    color: #c8a830;
+    font-weight: 600;
+    font-size: 0.85rem;
+    letter-spacing: 0.02em;
+    padding: 6px 16px;
+    background: rgba(200, 168, 48, 0.08);
+    border: 1px solid rgba(200, 168, 48, 0.15);
+    border-radius: 6px;
+    margin-top: 4px;
   }
 
   .board-wrapper {
-    margin-bottom: 20px;
+    margin-bottom: 24px;
+    max-height: 450px;
+    width: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 4px; /* Give room for focus/borders */
+  }
+  
+  /* Custom Scrollbar for wrappers */
+  .board-wrapper::-webkit-scrollbar, .opponent-board-wrapper::-webkit-scrollbar {
+    width: 6px;
+  }
+  .board-wrapper::-webkit-scrollbar-track, .opponent-board-wrapper::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+  }
+  .board-wrapper::-webkit-scrollbar-thumb, .opponent-board-wrapper::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 4px;
+  }
+  .board-wrapper::-webkit-scrollbar-thumb:hover, .opponent-board-wrapper::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.25);
   }
 
   .keyboard-wrapper {
     width: 100%;
   }
 
+  /* Opponent sidebar with glass effect */
   .opponent-sidebar {
-    padding: 10px 20px;
-    border-left: 1px solid #3a3a3c;
-    width: 320px;
-    flex-shrink: 0; /* Prevents the sidebar from shrinking */
-  }
-
-  .opponent-sidebar h3 {
-    text-align: center;
-    margin-top: 0;
-  }
-  
-  .secret-word {
-    text-align: center;
-    font-size: 0.9rem;
-    color: #818384;
-  }
-  
-  .secret-word strong {
-    color: #fff;
-    letter-spacing: 0.1rem;
-  }
-
-  .opponent-board-wrapper {
-    /* Scale down the entire board component for a minimized look */
-    transform: scale(0.8);
-    transform-origin: top center;
-  }
-
-  /* Game Over Styling */
-  .game-over-summary {
-    text-align: center;
-    margin: 20px 0;
-  }
-  
-  .game-over-summary h2 {
-    margin: 0;
-  }
-
-  .tiebreaker-details {
-    border: 1px solid #3a3a3c;
-    border-radius: 8px;
-    padding: 10px 20px;
-    margin: 15px auto;
-    max-width: 300px;
-    font-size: 0.9rem;
-  }
-  
-  .play-again {
-    padding: 10px 20px;
-    font-size: 1rem;
-    margin-top: 10px;
-    background-color: #538d4e;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-
-  /* Responsive Design for smaller screens */
-  @media (max-width: 900px) {
-    .game-view-container {
-      flex-direction: column;
-      align-items: center;
-      gap: 20px;
-    }
-    .opponent-sidebar {
-      width: 100%;
-      max-width: 500px;
-      border-left: none;
-      border-top: 1px solid #3a3a3c;
-      padding: 20px 10px;
-    }
-    .opponent-board-wrapper {
-      transform: scale(1); /* Reset scale on small screens */
-    }
-  }
-
-.opponent-sidebar {
-    display: flex; /* Centers the content */
+    display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 0 20px;
-    margin-left: 20px;
-    border-left: 1px solid #3a3a3c;
-    width: 280px;
+    padding: 20px 24px;
+    margin-left: 0;
+    width: 300px;
     flex-shrink: 0;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 16px;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .sidebar-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.25em;
+    color: rgba(255,255,255,0.25);
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 4px;
   }
 
   .opponent-sidebar h3 {
     text-align: center;
     margin-top: 0;
-    font-weight: normal;
-    letter-spacing: 0.1em;
-    font-size: 1rem;
-    color: #818384;
+    margin-bottom: 12px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.45);
+    text-transform: uppercase;
   }
   
   .secret-word {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     gap: 4px;
-    margin-bottom: 8px;
-    width: 250px; /* Set a fixed width to align with the board */
+    margin-bottom: 12px;
+    width: 240px;
   }
 
   .secret-word-tile {
@@ -379,27 +455,50 @@ socketService.on('guessProcessed', (data) => {
     justify-content: center;
     align-items: center;
     width: 100%;
-    height: 40px; /* Reduced height */
-    font-size: 1.5rem; /* Reduced font size */
-    font-weight: bold;
+    height: 40px;
+    font-size: 1.3rem;
+    font-weight: 700;
     color: #fff;
     text-transform: uppercase;
-    background-color: #538d4e;
-    border: 2px solid #538d4e;
+    background-color: #4caf50;
+    border: none;
     box-sizing: border-box;
-    border-radius: 2px;
+    border-radius: 4px;
   }
 
+  .opponent-board-wrapper {
+    transform: scale(0.78);
+    transform-origin: top center;
+    max-height: 600px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 4px;
+  }
 
   .opponent-board-wrapper :global(.board) {
-    width: 250px;
-    height: 300px;
+    width: 240px;
+    height: 290px;
     gap: 4px;
   }
 
   .opponent-board-wrapper :global(.tile) {
-    font-size: 1.5rem; /* Match the smaller font size */
+    font-size: 1.3rem;
   }
 
-   
+  /* Responsive Design */
+  @media (max-width: 900px) {
+    .game-view-container {
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+    }
+    .opponent-sidebar {
+      width: 100%;
+      max-width: 500px;
+      padding: 20px 16px;
+    }
+    .opponent-board-wrapper {
+      transform: scale(1);
+    }
+  }
 </style>

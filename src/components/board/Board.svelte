@@ -16,14 +16,38 @@
 </div>
 
 <style>
-  /* Your existing board styles */
-  .board { display: grid; grid-template-rows: repeat(6, 1fr); gap: 5px; width: 330px; height: 400px; margin: 0 auto; }
-  .row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
-  .tile { width: 100%; height: 100%; display: inline-flex; justify-content: center; align-items: center; font-size: 2rem; font-weight: bold; text-transform: uppercase; border: 2px solid #3a3a3c; box-sizing: border-box; color: white; }
+  .board {
+    display: grid;
+    grid-auto-rows: 68px; /* Fixed row height to allow infinite scrolling */
+    gap: 8px;
+    width: 100%;
+    max-width: 380px; /* Slightly larger board size */
+    margin: 0 auto;
+  }
+  .row {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+  }
+  .tile {
+    width: 100%;
+    height: 100%;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    border: 2px solid rgba(255,255,255,0.08);
+    border-radius: 6px;
+    box-sizing: border-box;
+    color: #ffffff;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+    font-family: 'Inter', sans-serif;
+  }
   
-  /* Use your game's state emojis directly for styling */
-  .tile.🟩 { background-color: #538d4e; border-color: #538d4e; }
-  .tile.🟨 { background-color: #b59f3b; border-color: #b59f3b; }
-  .tile.⬛ { background-color: #3a3a3c; border-color: #3a3a3c; }
-  .tile.🔳 { background-color: transparent; border-color: #3a3a3c; } /* Default empty tile */
+  .tile.🟩 { background-color: #4caf50; border-color: #4caf50; }
+  .tile.🟨 { background-color: #c8a830; border-color: #c8a830; }
+  .tile.⬛ { background-color: #2a2d31; border-color: #2a2d31; }
+  .tile.🔳 { background-color: transparent; border-color: rgba(255,255,255,0.08); }
 </style>
