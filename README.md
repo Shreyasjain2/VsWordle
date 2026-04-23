@@ -5,8 +5,9 @@
 A **premium, multiplayer competitive twist on the classic Wordle game**. Challenge your friends in a battle of wits where you set the secret word for your opponent and compete to solve it first in real-time.
 
 <div align="center">
-  <a href="https://github.com/Shreyasjain2/VsWordle"><img src="https://img.shields.io/badge/Status-Active-success" alt="Project Status"/></a>
-  <img src="https://img.shields.io/badge/Mode-Real--time%20PvP-blue" alt="Game Mode" />
+  <a href="https://vswordle.onrender.com/"><img src="https://img.shields.io/badge/Live-Demo-success" alt="Live Demo"/></a>
+  <a href="https://github.com/Shreyasjain2/VsWordle"><img src="https://img.shields.io/badge/Status-Active-blue" alt="Project Status"/></a>
+  <img src="https://img.shields.io/badge/Mode-Real--time%20PvP-orange" alt="Game Mode" />
   <img src="https://img.shields.io/badge/License-GPL--3.0-lightgrey" alt="License" />
 </div>
 
