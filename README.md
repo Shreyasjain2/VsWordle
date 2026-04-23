@@ -1,52 +1,90 @@
-![Multiplayer Wordle](https://github.com/Shreyasjain2/VsWordle/blob/main/VSWordle.png)
+# VS Wordle ⚔️
+
+![VS Wordle Header](https://github.com/Shreyasjain2/VsWordle/blob/main/VSWordle.png)
+
+A **premium, multiplayer competitive twist on the classic Wordle game**. Challenge your friends in a battle of wits where you set the secret word for your opponent and compete to solve it first in real-time.
+
 <div align="center">
-  <a href="https://wordlemul.onrender.com"><img src="https://img.shields.io/badge/Live-Demo-success" alt="Live Demo"/></a>
-  <img src="https://img.shields.io/badge/Mode-2%20Player-blue" alt="Game Mode" />
+  <a href="https://github.com/Shreyasjain2/VsWordle"><img src="https://img.shields.io/badge/Status-Active-success" alt="Project Status"/></a>
+  <img src="https://img.shields.io/badge/Mode-Real--time%20PvP-blue" alt="Game Mode" />
+  <img src="https://img.shields.io/badge/License-GPL--3.0-lightgrey" alt="License" />
 </div>
 
 ---
-A **multiplayer competitive twist on the classic Wordle game**, where two players challenge each other by assigning secret words and taking turns guessing.
-Hosted live [here](https://wordlemul.onrender.com).
 
-# Additional Features
-- True **player-vs-player** gameplay instead of a fixed daily word.
-- Each player **chooses a word for their opponent**, adding strategy and mind games.
-- Turn-based guessing system for fair competitive play.
-- Classic Wordle-style feedback (green, yellow, gray).
-- No predefined or stored solution, making each match unique.
-- Fully replayable with different word choices every game.
-- Clean, minimal, and responsive UI.
+## ✨ New Features & Redesign
+This version features a complete UI/UX overhaul focusing on a minimal, professional aesthetic:
 
-## Game Mode
-The game is designed as a **two-player competitive mode**, focused on strategic and turn-based play.
+- **Premium Dark UI**: A sleek, near-black aesthetic with polished glassmorphism effects.
+- **Interactive Background**: High-performance canvas-based particle system that reacts to your mouse movement.
+- **Real-Time Multiplayer**: Powered by Socket.io for instant turn syncing and game state management.
+- **Dynamic Wordle Board**: Unlike the original game, the board now dynamically scales! If you need more than 6 guesses, the UI generates new rows and lets you scroll back through the history.
+- **Breathe-Animation Timer**: Interactive pill-shaped turn indicators with breathing animations to highlight the active player.
+- **Strategic Word Setting**: You choose the word your opponent has to guess. Mind games are part of the play.
 
-**Multiplayer mode**:  
-Both players assign words to each other and attempt to guess their assigned word in the fewest attempts.
+---
 
-# Technical details
-This project is built as a web-based application using modern JavaScript/TypeScript.
-The focus is on game logic, turn handling, and correct Wordle-style evaluation.
-It is deployed using Render for easy online access.
+## 🚀 Getting Started
 
-# Forking this project
-Anyone is welcome to fork this repository and build upon it, provided they follow the accompanying license (GPL-3.0).
-Linking back or crediting the original project is appreciated.
+### Prerequisites
+- [Node.js](https://nodejs.org/) (v16 or higher)
+- npm or yarn
 
-Have fun competing and outsmarting your opponent :)
+### Local Installation
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/Shreyasjain2/VsWordle.git
+   cd VsWordle
+   ```
 
-# Analytics
-Basic analytics may be used to understand:
-- Number of players
-- General usage trends
+2. **Setup Frontend**
+   ```bash
+   npm install
+   npm run dev
+   ```
 
-No personally identifiable information is collected or shared.
+3. **Setup Backend Server**
+   ```bash
+   cd server
+   npm install
+   node server.js
+   ```
 
-<details>
-<summary>Possible future extensions</summary>
+4. **Play**
+   Open [http://localhost:5173](http://localhost:5173) in two separate browser window/tabs to test the multiplayer logic!
 
-- Real-time online multiplayer using WebSockets  
-- Timed competitive rounds  
-- Leaderboards and ranking system  
-- AI-based opponent mode  
+---
 
-</details>
+## 🛠 Tech Stack
+- **Frontend**: [Svelte](https://svelte.dev/) + [Vite](https://vitejs.dev/)
+- **Backend**: [Node.js](https://nodejs.org/) + [Express](https://expressjs.com/)
+- **Real-time**: [Socket.io](https://socket.io/)
+- **Styling**: Vanilla CSS (Modern Design Tokens)
+
+---
+
+## 🌐 Deployment (Render)
+This project is configured for easy deployment on **Render** using the included `render.yaml`.
+
+1. Connect your GitHub repository to Render.
+2. Create a **New Web Service**.
+3. Use the following **Build Command**:
+   ```bash
+   npm install && npm run build && cd server && npm install
+   ```
+4. Use the following **Start Command**:
+   ```bash
+   node server/server.js
+   ```
+5. Set `NODE_ENV` to `production` in the Environment variables.
+
+---
+
+## 📜 License
+This project is licensed under the GPL-3.0 License. Feel free to fork and build upon it!
+
+---
+
+<div align="center">
+  Developed by <a href="https://github.com/Shreyasjain2">Shreyas Jain</a>
+</div>
