@@ -5,15 +5,26 @@
 A **premium, multiplayer competitive twist on the classic Wordle game**. Challenge your friends in a battle of wits where you set the secret word for your opponent and compete to solve it first in real-time.
 
 <div align="center">
-  <a href="https://vswordle.onrender.com/"><img src="https://img.shields.io/badge/Live-Demo-success" alt="Live Demo"/></a>
-  <a href="https://github.com/Shreyasjain2/VsWordle"><img src="https://img.shields.io/badge/Status-Active-blue" alt="Project Status"/></a>
+  <a href="https://vswordle.onrender.com/">
+    <img src="https://img.shields.io/badge/PLAY-NOW-success?style=for-the-badge&logo=google-chrome&logoColor=white" alt="Play Now" height="40"/>
+  </a>
+</div>
+
+<div align="center">
   <img src="https://img.shields.io/badge/Mode-Real--time%20PvP-orange" alt="Game Mode" />
+  <a href="https://github.com/Shreyasjain2/VsWordle"><img src="https://img.shields.io/badge/Status-Live-blue" alt="Project Status"/></a>
   <img src="https://img.shields.io/badge/License-GPL--3.0-lightgrey" alt="License" />
 </div>
 
 ---
 
-## ✨ New Features & Redesign
+## 🎮 Play Here
+You can play the live version of the game here:  
+👉 **[vswordle.onrender.com](https://vswordle.onrender.com/)**
+
+---
+
+## ✨ Features & Redesign
 This version features a complete UI/UX overhaul focusing on a minimal, professional aesthetic:
 
 - **Premium Dark UI**: A sleek, near-black aesthetic with polished glassmorphism effects.
@@ -25,64 +36,35 @@ This version features a complete UI/UX overhaul focusing on a minimal, professio
 
 ---
 
-## 🚀 Getting Started
+## 🚀 Local Setup
+If you want to run the project locally:
 
-### Prerequisites
-- [Node.js](https://nodejs.org/) (v16 or higher)
-- npm or yarn
-
-### Local Installation
-1. **Clone the repository**
+1. **Clone & Install**
    ```bash
    git clone https://github.com/Shreyasjain2/VsWordle.git
    cd VsWordle
-   ```
-
-2. **Setup Frontend**
-   ```bash
    npm install
+   ```
+2. **Start Development Server**
+   ```bash
    npm run dev
    ```
-
-3. **Setup Backend Server**
+3. **Start Backend**
    ```bash
-   cd server
-   npm install
-   node server.js
+   node server/server.js
    ```
-
-4. **Play**
-   Open [http://localhost:5173](http://localhost:5173) in two separate browser window/tabs to test the multiplayer logic!
 
 ---
 
 ## 🛠 Tech Stack
-- **Frontend**: [Svelte](https://svelte.dev/) + [Vite](https://vitejs.dev/)
-- **Backend**: [Node.js](https://nodejs.org/) + [Express](https://expressjs.com/)
-- **Real-time**: [Socket.io](https://socket.io/)
+- **Frontend**: Svelte + Vite
+- **Backend**: Node.js + Socket.io
 - **Styling**: Vanilla CSS (Modern Design Tokens)
 
 ---
 
-## 🌐 Deployment (Render)
-This project is configured for easy deployment on **Render** using the included `render.yaml`.
-
-1. Connect your GitHub repository to Render.
-2. Create a **New Web Service**.
-3. Use the following **Build Command**:
-   ```bash
-   npm install && npm run build && cd server && npm install
-   ```
-4. Use the following **Start Command**:
-   ```bash
-   node server/server.js
-   ```
-5. Set `NODE_ENV` to `production` in the Environment variables.
-
----
-
 ## 📜 License
-This project is licensed under the GPL-3.0 License. Feel free to fork and build upon it!
+This project is licensed under the GPL-3.0 License.
 
 ---
 
